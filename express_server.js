@@ -1,3 +1,7 @@
+function generateRandomString() {
+  return Math.random().toString(36).substr(2, 6);
+}
+
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
@@ -45,3 +49,5 @@ app.get("/urls/:shortURL", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+console.log(generateRandomString());
