@@ -72,6 +72,18 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+app.post("/register", (req, res) => {
+  const newID = generateRandomString();
+  users.newID = {
+    id: newID,
+    email: req.body.email,
+    password: req.body.password
+  };
+  res.cookie("user_id", users.newID);
+  res.redirect("/urls")
+  console.log(users.newID);
+});
+
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   res.redirect(`/urls/${shortURL}`);
