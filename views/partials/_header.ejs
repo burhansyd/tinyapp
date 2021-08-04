@@ -10,10 +10,10 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
       <div>
-        <% if (username) { %>
+        <% if (user) { %>
           <form class="form-inline mr-auto" action="/logout" method="POST">
             <div class="form-group mb-2">
-              <label><%= username %></label>
+              <label><%= user.email %></label>
               <button type="submit" class="btn btn-primary">logout</button>
             </div>
           </form>
