@@ -22,10 +22,7 @@ function checkEmail(email) {
   return false;
 }
 
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+const urlDatabase = {};
 
 const users = { 
   "userRandomID": {
@@ -78,14 +75,14 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL]["longURL"],
     user: req.cookies.user_id
   };
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id]
+  const longURL = urlDatabase[req.params.id]["longURL"]
   if (longURL) {
     res.redirect(longURL);
   } else {
@@ -119,12 +116,12 @@ app.post("/register", (req, res) => {
   } else if (checkEmail(req.body.email)) {
     res.send("400 Email Already Exists")
   } else {
-    users.newID = {
+    users[newID] = {
       id: newID,
       email: req.body.email,
       password: req.body.password
     };
-    res.cookie("user_id", users.newID);
+    res.cookie("user_id", users[newID]);
     res.redirect("/urls");
   }
 });
@@ -132,7 +129,10 @@ app.post("/register", (req, res) => {
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   res.redirect(`/urls/${shortURL}`);
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL] = {
+    longURL: req.body.longURL,
+    userID: req.cookies.user_id.id
+  }
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -141,7 +141,10 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.longURL;
+  urlDatabase[req.params.id] = {
+    longURL: req.body.longURL,
+    userID: req.cookies.user_id.id
+  }
   res.redirect("/urls");
 });
 
