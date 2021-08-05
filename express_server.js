@@ -1,3 +1,4 @@
+//Dependencies
 const express = require("express");
 const app = express();
 const cookieSession = require('cookie-session')
@@ -14,23 +15,14 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set("view engine", "ejs");
 
-const { generateRandomString, checkEmail, urlsForUser, delEdit } = require('./helpers');
+const { generateRandomString, checkEmail, urlsForUser, checkURLOwnership } = require('./helpers');
 
+//Object Declerations
 const urlDatabase = {};
 
-const users = { 
-  "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
-  },
-  "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
-    password: "dishwasher-funk"
-  }
-};
+const users = {};
 
+//Get Requests
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -75,7 +67,8 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  if (req.session.user_id && delEdit(req.session.user_id.id, req.params.id, urlDatabase)) {
+  //Conditional checks if user cookie exists and if user owns url that is entered
+  if (req.session.user_id && checkURLOwnership(req.session.user_id.id, req.params.id, urlDatabase)) {
     const templateVars = {
       shortURL: req.params.id,
       longURL: urlDatabase[req.params.id]["longURL"],
@@ -96,6 +89,7 @@ app.get("/u/:id", (req, res) => {
   }
 })
 
+//Post Requests
 app.post("/login", (req, res) => {
   const user = checkEmail(req.body.email, users);
   if (user) {
@@ -142,7 +136,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  if (req.session.user_id && delEdit(req.session.user_id.id, req.params.id, urlDatabase)) {
+  if (req.session.user_id && checkURLOwnership(req.session.user_id.id, req.params.id, urlDatabase)) {
     delete urlDatabase[req.params.id];
     res.redirect("/urls");
   } else {

@@ -22,7 +22,7 @@ function urlsForUser(userID, database) {
   return uniqURLs;
 };
 
-function delEdit(userID, shortURL, database) {
+function checkURLOwnership(userID, shortURL, database) {
   for (let id in database) {
     if (userID === database[id]["userID"] && shortURL === id) {
       return true;
@@ -30,4 +30,4 @@ function delEdit(userID, shortURL, database) {
   }
 };
 
-module.exports = { generateRandomString, checkEmail, urlsForUser, delEdit };
+module.exports = { generateRandomString, checkEmail, urlsForUser, checkURLOwnership };
