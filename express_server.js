@@ -53,8 +53,12 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  const templateVars = { user: req.cookies.user_id }
-  res.render("user_registration", templateVars);
+  if (req.cookies.user_id) {
+    res.redirect("/urls");
+  } else {
+    const templateVars = { user: req.cookies.user_id }
+    res.render("user_registration", templateVars);
+  }
 });
 
 app.get("/login", (req, res) => {
