@@ -38,7 +38,7 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   if (req.session.user_id) {
     const templateVars = {
-      urls: urlsForUser(req.session.user_id.id),
+      urls: urlsForUser(req.session.user_id.id, urlDatabase),
       user: req.session.user_id
     };
     res.render("urls_index", templateVars);
@@ -75,7 +75,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  if (req.session.user_id && delEdit(req.session.user_id.id, req.params.id)) {
+  if (req.session.user_id && delEdit(req.session.user_id.id, req.params.id, urlDatabase)) {
     const templateVars = {
       shortURL: req.params.id,
       longURL: urlDatabase[req.params.id]["longURL"],
@@ -134,7 +134,7 @@ app.post("/register", (req, res) => {
 
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
-  res.redirect(`/urls/${shortURL}`);
+  res.redirect("/urls");
   urlDatabase[shortURL] = {
     longURL: req.body.longURL,
     userID: req.session.user_id.id
@@ -142,7 +142,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  if (req.session.user_id && delEdit(req.session.user_id.id, req.params.id)) {
+  if (req.session.user_id && delEdit(req.session.user_id.id, req.params.id, urlDatabase)) {
     delete urlDatabase[req.params.id];
     res.redirect("/urls");
   } else {

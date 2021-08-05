@@ -9,22 +9,22 @@ function checkEmail(email, database) {
       return id;
     }
   }
-  return false;
+  return undefined;
 }
 
-function urlsForUser(userID) {
+function urlsForUser(userID, database) {
   const uniqURLs = {};
-  for (let id in urlDatabase) {
-    if (userID === urlDatabase[id]["userID"]) {
-      uniqURLs[id] = urlDatabase[id];
+  for (let id in database) {
+    if (userID === database[id]["userID"]) {
+      uniqURLs[id] = database[id];
     }
   }
   return uniqURLs;
 };
 
-function delEdit(userID, shortURL) {
-  for (let id in urlDatabase) {
-    if (userID === urlDatabase[id]["userID"] && shortURL === id) {
+function delEdit(userID, shortURL, database) {
+  for (let id in database) {
+    if (userID === database[id]["userID"] && shortURL === id) {
       return true;
     }
   }
