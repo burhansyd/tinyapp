@@ -83,7 +83,7 @@ app.get("/urls/:id", (req, res) => {
     };
     res.render("urls_show", templateVars);
   } else {
-    res.send("Unauthorized");
+    res.send("401 Unauthorized");
   }
 });
 
@@ -146,7 +146,7 @@ app.post("/urls/:id/delete", (req, res) => {
     delete urlDatabase[req.params.id];
     res.redirect("/urls");
   } else {
-    res.send("Unauthorized");
+    res.send("401 Unauthorized");
   }
 });
 
