@@ -76,8 +76,6 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  // const longURL = urlDatabase[req.params.shortURL]
-  // res.redirect(longURL);
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
@@ -85,6 +83,15 @@ app.get("/urls/:shortURL", (req, res) => {
   };
   res.render("urls_show", templateVars);
 });
+
+app.get("/u/:id", (req, res) => {
+  const longURL = urlDatabase[req.params.id]
+  if (longURL) {
+    res.redirect(longURL);
+  } else {
+    res.send("404 Not Found");
+  }
+})
 
 app.post("/login", (req, res) => {
   const user = checkEmail(req.body.email);
