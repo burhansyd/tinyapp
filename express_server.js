@@ -22,6 +22,24 @@ function checkEmail(email) {
   return false;
 }
 
+function urlsForUser(userID) {
+  const uniqURLs = {};
+  for (let id in urlDatabase) {
+    if (userID === urlDatabase[id]["userID"]) {
+      uniqURLs[id] = urlDatabase[id];
+    }
+  }
+  return uniqURLs;
+};
+
+function delEdit(userID, shortURL) {
+  for (let id in urlDatabase) {
+    if (userID === urlDatabase[id]["userID"] && shortURL === id) {
+      return true;
+    }
+  }
+};
+
 const urlDatabase = {};
 
 const users = { 
@@ -42,11 +60,19 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = {
-    urls: urlDatabase,
-    user: req.cookies.user_id
-  };
-  res.render("urls_index", templateVars);
+  if (req.cookies.user_id) {
+    const templateVars = {
+      urls: urlsForUser(req.cookies.user_id.id),
+      user: req.cookies.user_id
+    };
+    res.render("urls_index", templateVars);
+  } else {
+    const templateVars = {
+      urls: urlDatabase,
+      user: req.cookies.user_id
+    };
+    res.render("urls_index", templateVars);
+  }
 });
 
 app.get("/register", (req, res) => {
@@ -72,13 +98,17 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
-app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL]["longURL"],
-    user: req.cookies.user_id
-  };
-  res.render("urls_show", templateVars);
+app.get("/urls/:id", (req, res) => {
+  if (req.cookies.user_id && delEdit(req.cookies.user_id.id, req.params.id)) {
+    const templateVars = {
+      shortURL: req.params.id,
+      longURL: urlDatabase[req.params.id]["longURL"],
+      user: req.cookies.user_id
+    };
+    res.render("urls_show", templateVars);
+  } else {
+    res.send("Unauthorized");
+  }
 });
 
 app.get("/u/:id", (req, res) => {
@@ -135,9 +165,13 @@ app.post("/urls", (req, res) => {
   }
 });
 
-app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
+app.post("/urls/:id/delete", (req, res) => {
+  if (req.cookies.user_id && delEdit(req.cookies.user_id.id, req.params.id)) {
+    delete urlDatabase[req.params.id];
+    res.redirect("/urls");
+  } else {
+    res.send("Unauthorized");
+  }
 });
 
 app.post("/urls/:id", (req, res) => {
