@@ -55,6 +55,10 @@ app.get("/register", (req, res) => {
   res.render("user_registration");
 });
 
+app.get("/login", (req, res) => {
+  res.render("login_form");
+});
+
 app.get("/urls/new", (req, res) => {
   const templateVars = { user: req.cookies.user_id }
   res.render("urls_new", templateVars);
@@ -72,7 +76,6 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
   res.redirect("/urls");
 });
 
