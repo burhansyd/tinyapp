@@ -18,9 +18,9 @@ function generateRandomString() {
   return Math.random().toString(36).substr(2, 6);
 }
 
-function checkEmail(email) {
-  for (let user in users) {
-    if (email === users[user]["email"]) {
+function checkEmail(email, database) {
+  for (let user in database) {
+    if (email === database[user]["email"]) {
       const id = user;
       return id;
     }
@@ -127,7 +127,7 @@ app.get("/u/:id", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-  const user = checkEmail(req.body.email);
+  const user = checkEmail(req.body.email, users);
   if (user) {
     if (bcrypt.compareSync(req.body.password, users[user]["password"])){
       req.session.user_id = users[user];
@@ -149,7 +149,7 @@ app.post("/register", (req, res) => {
   const newID = generateRandomString();
   if (req.body.email === "" || req.body.password === "" || (req.body.email === "" && req.body.email === "")) {
     res.send("400 Invalid Email or Password")
-  } else if (checkEmail(req.body.email)) {
+  } else if (checkEmail(req.body.email, users)) {
     res.send("400 Email Already Exists")
   } else {
     users[newID] = {
