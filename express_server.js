@@ -15,7 +15,8 @@ function generateRandomString() {
 function checkEmail(email) {
   for (let user in users) {
     if (email === users[user]["email"]) {
-      return true;
+      const id = user;
+      return id;
     }
   }
   return false;
@@ -52,11 +53,13 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  res.render("user_registration");
+  const templateVars = { user: req.cookies.user_id }
+  res.render("user_registration", templateVars);
 });
 
 app.get("/login", (req, res) => {
-  res.render("login_form");
+  const templateVars = { user: req.cookies.user_id }
+  res.render("login_form", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
@@ -76,11 +79,21 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  res.redirect("/urls");
+  const user = checkEmail(req.body.email);
+  if (user) {
+    if (users[user]["password"] === req.body.password){
+      res.cookie("user_id", users[user]);
+      res.redirect("/urls");
+    } else {
+      res.send("403 Invalid Password");
+    }
+  } else {
+    res.send("403 Invalid E-Mail");
+  }
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
