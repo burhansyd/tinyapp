@@ -29,17 +29,21 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   if (req.session.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
+});
+
+app.get("/urls", (req, res) => {
+  if (req.session.user_id) {
     const templateVars = {
       urls: urlsForUser(req.session.user_id.id, urlDatabase),
       user: req.session.user_id
     };
     res.render("urls_index", templateVars);
   } else {
-    const templateVars = {
-      urls: urlDatabase,
-      user: req.session.user_id
-    };
-    res.render("urls_index", templateVars);
+    res.redirect("/login");
   }
 });
 
@@ -127,12 +131,15 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString();
-  res.redirect("/urls");
-  urlDatabase[shortURL] = {
-    longURL: req.body.longURL,
-    userID: req.session.user_id.id
+  if (req.session.user_id) {
+    const shortURL = generateRandomString();
+    res.redirect("/urls");
+    urlDatabase[shortURL] = {
+      longURL: req.body.longURL,
+      userID: req.session.user_id.id
+    }
   }
+  res.send("401 Unauthorized");
 });
 
 app.post("/urls/:id/delete", (req, res) => {
@@ -145,11 +152,14 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = {
-    longURL: req.body.longURL,
-    userID: req.session.user_id.id
+  if (req.session.user_id) {
+    urlDatabase[req.params.id] = {
+      longURL: req.body.longURL,
+      userID: req.session.user_id.id
+    }
+    res.redirect("/urls");
   }
-  res.redirect("/urls");
+  res.send("401 Unauthorized");
 });
 
 app.listen(PORT, () => {
