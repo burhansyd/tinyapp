@@ -29,14 +29,6 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   if (req.session.user_id) {
-    res.redirect("/urls");
-  } else {
-    res.redirect("/login");
-  }
-});
-
-app.get("/urls", (req, res) => {
-  if (req.session.user_id) {
     const templateVars = {
       urls: urlsForUser(req.session.user_id.id, urlDatabase),
       user: req.session.user_id
@@ -138,8 +130,9 @@ app.post("/urls", (req, res) => {
       longURL: req.body.longURL,
       userID: req.session.user_id.id
     }
+  } else {
+    res.send("401 Unauthorized");
   }
-  res.send("401 Unauthorized");
 });
 
 app.post("/urls/:id/delete", (req, res) => {
